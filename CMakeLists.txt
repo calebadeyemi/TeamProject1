@@ -6,6 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(SOURCE_FILES main.cpp)
 
 add_executable(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
+add_library(${CMAKE_PROJECT_NAME}.out ${SOURCE_FILES})
 
 include_directories(src)
 
