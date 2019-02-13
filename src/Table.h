@@ -12,27 +12,24 @@ using namespace std;
 
 class Table{
 
-private:
-
-
 public:
 
 
     Table(vector<string> attribute);
     Table();
 
-    void delete_attribute(string attribute_name);
-    void insert_attribute(string record);
+    void deleteAttribute(string attribute_name);
+    void insertAttribute(string record);
 
-    void add_attribute(string attribute_name);
-    string get_attribute();
-    string get_size ();
+    void addAttribute(string attribute_name);
+    string getAttribute();
+    string getSize ();
 
-    string individual_record(string record);
-    string name_key(string attribute_name);
+    string individualRecord(string record);
+    string nameKey(string attribute_name);
 
-    string cross_join(string table1, string table2);
-    string natural_join(string table1, string table2);
+    string crossJoin(string table1, string table2);
+    string naturalJoin(string table1, string table2);
     string calculations(string attribute_name);
 
 };
