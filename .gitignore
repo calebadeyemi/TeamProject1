@@ -8,13 +8,19 @@ tests/lib/
 .idea/
 cmake-build-debug/
 
-# XCode Build
+# Accidental Builds in src
+/src/*.a
+/src/*.out
+/src/*.o
 **/a.out
-/xcode_test_dir/*.h
-/xcode_test_dir/*.cpp
+
+# Basic Build
+/basic_build/*.h
+/basic_build/*.cpp
 
 # Deliverable
 /deliverable/*.cpp
+/deliverable/*.out
 
 # MacOS
 .DS_Store
