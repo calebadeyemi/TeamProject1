@@ -13,6 +13,9 @@ cmake-build-debug/
 /xcode_test_dir/*.h
 /xcode_test_dir/*.cpp
 
+# Deliverable
+/deliverable/*.cpp
+
 # MacOS
 .DS_Store
 ../.DS_Store
