@@ -3,11 +3,13 @@
 //
 
 
-#include "table.h"
+#include "Table.h"
+#include "Record.h"
+
 using namespace std;
 
 
-Table::Table(vector<string> attribute){
+Table::Table(vector<string> attribute) : Table() {
     for(int i =0 ; i < attribute.size(); ++i) {
         cout << attribute[i] << " ";
     }
@@ -18,53 +20,55 @@ Table::Table(){
     cout << "empty table" << endl;
 }
 
-void Table::deleteAttribute(string attribute_name){
+void Table::deleteAttribute(string attribute){
     cout << "deleted function called " << endl;
 
 }
 
 
-void Table::insertAttribute(string record){
+void Table::insert(Record record){
     cout << "inserts function called " << endl;
 }
 
-void Table::addAttribute(string attribute_name){
+void Table::addAttribute(string attribute){
     cout << "add function called" << endl;
 }
 
-string Table::getAttribute(){
+vector<string> Table::getAttributes(){
     cout << "get attribute function called" << endl;
-    return "";
+    return vector<string>();
 }
 
-string Table::getSize (){
+int Table::getSize(){
     cout << "get size function called" << endl;
-    return "";
+    return 0;
 }
 
-string Table::individualRecord(string record){
+vector<Record> Table::getRecords() {
     cout << "individual record function called" << endl;
-    return "";
+    return vector<Record>();
 }
 
-string Table::nameKey(string attribute_name){
+void Table::makeKey(string attribute){
     cout << "this attribute is now a key for the table" << endl;
-    return "";
 }
 
-string Table::crossJoin(string table1, string table2){
+Table Table::crossJoin(Table table1, Table table2){
     cout << "one table is now produced" << endl;
-    return "";
+    return Table();
 }
 
-string Table::naturalJoin(string table1, string table2){
+Table Table::naturalJoin(Table table1, Table table2){
     cout << "one table is now produced but multiple things are checked before" << endl;
-    return "";
+    return Table();
 }
 
-string Table::calculations(string attribute_name){
-    cout << "count, min, and max calculated" << endl;
-    return "";
+int Table::count(string attribute) {
+    return 0;
+}
+
+int Table::min(string attribute) {
+    return 0;
 }
 
 

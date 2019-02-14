@@ -8,28 +8,55 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include "Record.h"
+
+
 using namespace std;
 
 class Table{
 
 public:
-
-
-    Table(vector<string> attribute);
+    // Builds an empty table
     Table();
 
+    // Builds a table with a list of attributes
+    explicit Table(vector<string> attribute);
 
-    string getAttribute();
-    string getSize ();
-    string individualRecord(string record);
+    // Adds an attribute to the table
+    void addAttribute(string attribute);
 
-    void nameKey(string attribute_name);
-    void crossJoin(string table1, string table2);
-    void naturalJoin(string table1, string table2);
-    void calculations(string attribute_name);
-    void deleteAttribute(string attribute_name);
-    void insertAttribute(string record);
-    void addAttribute(string attribute_name);
+    // Removes an attribute from the table
+    void deleteAttribute(string attribute);
+
+    // Adds a record
+    void insert(Record record);
+
+    // Gets a list of the attributes available
+    vector<string> getAttributes();
+
+    // Gets number of records
+    int getSize();
+
+    // Gets all records in a table
+    vector<Record> getRecords();
+
+    // Makes an attribute the key
+    void makeKey(string attribute);
+
+    // Cross joins two tables and returns the join table
+    Table crossJoin(Table table1, Table table2);
+
+    // Natural joins two tables and returns the join table
+    Table naturalJoin(Table table1, Table table2);
+
+    // Returns a count of non-null in your attribute
+    int count(string attribute);
+
+    // Returns index of min record
+    int min(string attribute);
+
+    // Returns index of max record
+    int max(string attribute);
 };
 
 #endif //TABLE_TABLE_H
