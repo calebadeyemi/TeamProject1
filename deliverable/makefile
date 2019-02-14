@@ -2,10 +2,8 @@ cmake_build=cmake-build-debug
 
 build: clean
 	# get archive
-	cp ../$(cmake_build)/lib/*.a .
-	cp ../src/*.h .
-	cp ../main.cpp .
-	g++ -std=c++17 main.cpp *.a
+	cp ../$(cmake_build)/lib/*.a lib/
+	cp ../src/*.h lib/
 
 clean:
-	rm -f *.a *.cpp *.h
+	rm -f lib/*.a lib/*.cpp lib/*.h lib/*.out
