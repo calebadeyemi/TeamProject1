@@ -7,3 +7,12 @@ tests/lib/
 # Jet Brains
 .idea/
 cmake-build-debug/
+
+# XCode Build
+**/a.out
+/xcode_test_dir/*.h
+/xcode_test_dir/*.cpp
+
+# MacOS
+.DS_Store
+../.DS_Store
