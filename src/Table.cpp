@@ -71,5 +71,9 @@ int Table::min(string attribute) {
     return 0;
 }
 
+int Table::max(string attribute) {
+    return 0;
+}
+
 
 

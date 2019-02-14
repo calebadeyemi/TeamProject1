@@ -21,10 +21,10 @@ public:
     Database load(string tableName);
 
     // Gets a list of the table names available
-    vector<string> getTableNames(Database database);
+    vector<string> getTableNames();
 
     // Gets the tables from a database
-    vector<Table> getTables(Database database);
+    vector<Table> getTables();
 
     // Queries the database for records
     void query(string query);

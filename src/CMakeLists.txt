@@ -6,15 +6,14 @@ set(HEADER_FILES
         Record.h
         )
 
-set(SOURCE_FILES
+set(IMPLEMENTATION_FILES
         Table.cpp
         Database.cpp
         Record.cpp
-        main.cpp
         )
 
 # The library contains header and source files.
 add_library(${CMAKE_PROJECT_NAME}_lib STATIC
-        ${SOURCE_FILES}
+        ${IMPLEMENTATION_FILES}
         ${HEADER_FILES}
         )

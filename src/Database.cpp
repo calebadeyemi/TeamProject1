@@ -16,11 +16,11 @@ Database Database::load(string tableName) {
     return Database();
 }
 
-vector<string> Database::getTableNames(Database database) {
+vector<string> Database::getTableNames() {
     return vector<string>();
 }
 
-vector<Table> Database::getTables(Database database) {
+vector<Table> Database::getTables() {
     return vector<Table>();
 }
 
