@@ -24,9 +24,9 @@ public:
 
     int size();
 
-    string operator[](int i) const;
+    string operator[](int index) const;
 
-    string& operator[](int i);
+    string& operator[](int index);
 };
 
 #endif /* Record_hpp */
