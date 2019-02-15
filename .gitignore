@@ -19,8 +19,9 @@ cmake-build-debug/
 /basic_build/*.cpp
 
 # Deliverable
-/deliverable/*.cpp
-/deliverable/*.out
+/deliverable/**/*.cpp
+/deliverable/**/*.h
+/deliverable/**/*.out
 
 # MacOS
 .DS_Store
