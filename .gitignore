@@ -26,3 +26,6 @@ cmake-build-debug/
 # MacOS
 .DS_Store
 ../.DS_Store
+
+# zips
+**/**.zip
