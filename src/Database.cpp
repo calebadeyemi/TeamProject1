@@ -24,7 +24,7 @@ vector<Table> Database::getTables() {
     return vector<Table>();
 }
 
-void Database::query(string query) {
-
+Table Database::query(string query) {
+    return Table();
 }
 
