@@ -26,8 +26,8 @@ public:
     // Gets the tables from a database
     vector<Table> getTables();
 
-    // Queries the database for records
-    void query(string query);
+    // Queries the database for records and returns a Table
+    Table query(string query);
 };
 
 #endif //TEAMDATABASE_DATABASE_H
