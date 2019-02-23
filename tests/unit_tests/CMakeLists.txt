@@ -3,7 +3,7 @@ set(TEST_NAME tests)
 
 add_executable(${TEST_NAME}
     test_example.cpp
-        )
+        DatabaseTests.cpp)
 
 set_target_properties(gtest gtest_main ${TEST_NAME}
         PROPERTIES

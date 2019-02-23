@@ -6,12 +6,14 @@ set(HEADER_FILES
         Database.h
         Table.h
         Record.h
+        DbError.h
         )
 
 set(IMPLEMENTATION_FILES
         Table.cpp
         Database.cpp
         Record.cpp
+        DbError.cpp
         )
 
 # The library contains header and source files.

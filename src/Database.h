@@ -1,12 +1,18 @@
 #ifndef TEAMDATABASE_DATABASE_H
 #define TEAMDATABASE_DATABASE_H
 
+#include <map>
 #include <string>
+#include <sstream>
 #include "Table.h"
 
 using namespace std;
 
 class Database {
+    map<string, Table> tables;
+    vector<string> getAttributesFromQuery(stringstream& query);
+    Table getTableFromQuery(stringstream& query);
+
 public:
     // Adds a new table to the database
     void add(string tableName, Table table);

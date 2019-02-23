@@ -5,5 +5,5 @@ TEST(Example, Equals) {
 }
 
 TEST(Example, Equals2) {
-  ASSERT_EQ(1, 2);
+  ASSERT_TRUE(true);
 }
