@@ -57,19 +57,24 @@ vector<Table> Database::getTables() {
     return tableList;
 }
 
-Table Database::query(string query) {
-    stringstream queryStream(query);
-
+Table Database::query(string select, string from, string where) {
+    // get attribute list
+    stringstream selectStream(select);
     vector<string> attributes;
-    attributes = getAttributesFromQuery(queryStream);
-    Table table = getTableFromQuery(queryStream);
+    attributes = getAttributesFromQuery(selectStream);
+
+    // get the proper table
+    Table table = getTableFromQuery(from);
 
     // here we need to get the table and run the comparisons on it
     auto records = table.getRecords();
-    Table matchTable;
 
+
+    // generate a new table
+    Table matchTable(attributes);
     for (Record const &record : records) {
-        // Apply comparisons on each record.
+        // Apply comparisons on each record
+
 
         // if the record works, store in table
         matchTable.insert(record);
@@ -137,12 +142,7 @@ vector<string> Database::getAttributesFromQuery(stringstream &query) {
     return attributes;
 }
 
-Table Database::getTableFromQuery(stringstream &query) {
-    string from, tableName;
-
-    query >> from;
-    query >> tableName;
-
+Table Database::getTableFromQuery(string &tableName) {
     if (tables.find(tableName) != tables.end()) {
         return tables[tableName];
     } else {
