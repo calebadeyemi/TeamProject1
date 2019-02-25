@@ -1,4 +1,5 @@
 #include <sstream>
+#include <fstream>
 #include "Database.h"
 #include "DbError.h"
 
@@ -12,7 +13,28 @@ void Database::drop(string tableName) {
 }
 
 void Database::save(string fileName) {
+    // serialize and write to a file
+    ofstream dbStore(fileName, ios::trunc);
 
+    // add headers
+    for (auto const &tableMapping : tables) {
+        Table table = tableMapping.second;
+        auto attributes = table.getAttributes();
+        dbStore << attributes.at(0);
+
+        for (int i = 1; i < attributes.size() - 1; i++) {
+            dbStore << " ," << attributes.at(i);
+        }
+        dbStore << endl;
+
+        for (Record record : table.getRecords()) {
+            dbStore << record[0];
+            for (int i = 1; i < attributes.size() - 1; i++) {
+                dbStore << ", " << record[i];
+            }
+            dbStore << endl;
+        }
+    }
 }
 
 Database Database::load(string tableName) {
@@ -42,7 +64,52 @@ Table Database::query(string query) {
     attributes = getAttributesFromQuery(queryStream);
     Table table = getTableFromQuery(queryStream);
 
-    return Table();
+    // here we need to get the table and run the comparisons on it
+    auto records = table.getRecords();
+    Table matchTable;
+
+    for (Record const &record : records) {
+        // Apply comparisons on each record.
+
+        // if the record works, store in table
+        matchTable.insert(record);
+    }
+
+    return matchTable;
+}
+
+Table Database::parseComparison(stringstream& comparisons, vector<string>* aggregator) {
+    // Every comparison will return a table, and subsequent comparisons will act on
+    // that table. For example:
+    //
+    // Select * FROM table WHERE ((something > otherthing) AND ((this = that) OR NOT (this = 'bucket')))
+    //
+    // First returns a table where something > otherthing
+
+    string lhs, comparator, rhs;
+    comparisons >> lhs;
+
+    // if open bracket, drop into another comparison. This will continue until fully resolved
+    // (((this > that)))
+    // (..
+    //  (..
+    //   (this > that)
+    //              ..)
+    //               ..)
+
+    bool paren = false;
+    if (lhs.at(0) == '(') {
+        parseComparison(comparisons, aggregator);
+        paren = true;
+        // remove paren
+        lhs.erase(0);
+    }
+
+    comparisons >> comparator;
+    comparisons >> rhs;
+    if (paren) {
+        rhs.erase(rhs.size() - 1);
+    }
 }
 
 vector<string> Database::getAttributesFromQuery(stringstream &query) {
@@ -52,7 +119,7 @@ vector<string> Database::getAttributesFromQuery(stringstream &query) {
     query >> select;
     query >> attribute;
 
-    while (attribute != "FROM" || attribute != "from") {
+    while (!(attribute == "FROM" || attribute == "from") && query.good()) {
         attributes.push_back(attribute);
         query >> attribute;
     }

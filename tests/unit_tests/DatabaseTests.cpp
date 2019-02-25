@@ -30,3 +30,9 @@ TEST(DatabaseTests, GetsTableNames) {
         ASSERT_EQ(tableNames[i], storedNames[i]);
     }
 }
+
+TEST(DatabaseTests, DoesQuery) {
+    Database d;
+    Table t = d.query("SELECT * FROM table1 WHERE name = 3");
+    FAIL();
+}

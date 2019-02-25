@@ -12,6 +12,7 @@ class Database {
     map<string, Table> tables;
     vector<string> getAttributesFromQuery(stringstream& query);
     Table getTableFromQuery(stringstream& query);
+    Table parseComparison(stringstream& comparisons, vector<string>* aggregator = nullptr);
 
 public:
     // Adds a new table to the database
