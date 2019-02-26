@@ -29,3 +29,14 @@ string& Record::operator[](int i){
     return this->content[i];
 }
 
+void Record::deleteRecordAttribute(int index){
+    content.erase(content.begin(), content.begin() + index);
+    
+}
+void Record::addRecordAttribute(string attribute){
+    content.push_back(attribute);
+}
+
+void Record::addRecordAttribute(){
+    content.resize(content.size()+1);
+}
