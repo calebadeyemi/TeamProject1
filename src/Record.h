@@ -27,6 +27,12 @@ public:
     string operator[](int index) const;
 
     string& operator[](int index);
+    
+    void deleteRecordAttribute(int index);
+    
+    void addRecordAttribute(string attribute);
+    
+    void addRecordAttribute();
 };
 
 #endif /* Record_hpp */
