@@ -3,7 +3,7 @@ set(TEST_NAME tests)
 
 add_executable(${TEST_NAME}
     test_example.cpp
-        DatabaseTests.cpp)
+        DatabaseTests.cpp TableTests.cpp)
 
 target_link_libraries(${TEST_NAME} gtest gtest_main)
 

@@ -14,9 +14,6 @@ struct ComparisonStack {
         string rhs;
         char comparator;
         bool eval() {
-            switch(comparator) {
-                case '&': return lhs && rhs;
-            }
         };
     };
 
