@@ -17,7 +17,7 @@ using namespace std;
 
 class Table{
 private:
-    vector<Record> records;
+    vector<Record*> records;
     string key;
     int keyIndex;
 
@@ -35,7 +35,7 @@ public:
     void deleteAttribute(string attribute);
 
     // Adds a record
-    void insert(Record record);
+    void insert(Record* record);
 
     // Gets a list of the attributes available
     vector<string> getAttributes();
@@ -47,10 +47,13 @@ public:
     int getSize();
 
     // Gets all records in a table
-    vector<Record> getRecords();
+    vector<Record*> getRecords();
 
     // Get a specific record
-    Record getRecord(int i);
+    Record* getRecord(int i);
+
+    // Get row 0
+    Record* getHeaderRecord();
 
     // Makes an attribute the key
     void makeKey(string attribute);
@@ -62,10 +65,10 @@ public:
     int getKeyIndex();
 
     // Cross joins two tables and returns the join table
-    Table crossJoin(Table table1, Table table2);
+    Table* crossJoin(Table* table1, Table* table2);
 
     // Natural joins two tables and returns the join table
-    Table naturalJoin(Table table1, Table table2);
+    Table* naturalJoin(Table* table1, Table* table2);
 
     // Returns a count of non-null in your attribute
     int count(string attribute);

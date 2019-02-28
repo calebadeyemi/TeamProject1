@@ -35,7 +35,6 @@ public:
 
     // Queries the database for records and returns a Table
     Table query(string select, string from, string where);
-    Table query(string query);
 };
 
 #endif //TEAMDATABASE_DATABASE_H
