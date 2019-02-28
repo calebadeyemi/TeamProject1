@@ -11,7 +11,7 @@ using namespace std;
 class Database {
     map<string, Table> tables;
     vector<string> getAttributesFromQuery(stringstream& query);
-    Table getTableFromQuery(stringstream& query);
+    Table getTableFromQuery(string &tableName);
     Table parseComparison(stringstream& comparisons, vector<string>* aggregator = nullptr);
 
 public:
@@ -34,6 +34,7 @@ public:
     vector<Table> getTables();
 
     // Queries the database for records and returns a Table
+    Table query(string select, string from, string where);
     Table query(string query);
 };
 

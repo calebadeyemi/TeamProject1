@@ -1,7 +1,47 @@
+#include <map>
 #include <sstream>
 #include <fstream>
 #include "Database.h"
 #include "DbError.h"
+
+struct Comparison {
+    map<string, string> relations;
+    map<string, string> comparisons;
+    string lhs;
+    string rhs;
+    string comparator;
+    Comparison() {
+        relations["AND"] = "&&";
+        relations["OR"] = "||";
+        relations["NOT"] = "!";
+        comparisons[">"] = ">";
+        comparisons[">="] = ">=";
+        comparisons["<"] = "<";
+        comparisons["<="] = "<=";
+        comparisons["="] = "<=";
+    }
+
+    Comparison(stringstream& ss) : Comparison() {
+        string currString;
+        ss >> currString;
+        while (relations.find(currString) == relations.end() && ss.good()) {
+            lhs += currString;
+            ss >> currString;
+        }
+        comparator = currString;
+
+        ss >> currString;
+        while (ss.good()) {
+            rhs += currString;
+            ss >> currString;
+        }
+        ss.clear();
+    }
+
+    void print() {
+        cout << lhs << " : " << comparator << " : "  << rhs << endl;
+    }
+};
 
 void Database::add(string tableName, Table table) {
     tables[tableName] = table;
@@ -69,16 +109,18 @@ Table Database::query(string select, string from, string where) {
     // here we need to get the table and run the comparisons on it
     auto records = table.getRecords();
 
+    // get all the (...) comparisons
+    stringstream whereStream(where);
+    Comparison comp(whereStream);
+
+    comp.print();
 
     // generate a new table
     Table matchTable(attributes);
-    for (Record const &record : records) {
         // Apply comparisons on each record
 
 
         // if the record works, store in table
-        matchTable.insert(record);
-    }
 
     return matchTable;
 }
@@ -90,7 +132,6 @@ Table Database::parseComparison(stringstream& comparisons, vector<string>* aggre
     // Select * FROM table WHERE ((something > otherthing) AND ((this = that) OR NOT (this = 'bucket')))
     //
     // First returns a table where something > otherthing
-
     string lhs, comparator, rhs;
     comparisons >> lhs;
 
@@ -121,18 +162,10 @@ vector<string> Database::getAttributesFromQuery(stringstream &query) {
     vector<string> attributes;
     string select, attribute;
 
-    query >> select;
-    query >> attribute;
-
-    while (!(attribute == "FROM" || attribute == "from") && query.good()) {
-        attributes.push_back(attribute);
+    while (query.good()) {
         query >> attribute;
+        attributes.push_back(attribute);
     }
-
-    // last attribute _should_ be "from"
-    attributes.pop_back();
-    // move back the stream caret for next call
-    query.unget();
 
     // If no attributes, there is a problem
     if (attributes.empty()) {

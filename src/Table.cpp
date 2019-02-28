@@ -5,6 +5,9 @@
 
 #include "Table.h"
 #include "Record.h"
+#include "DbError.h"
+#include <algorithm>
+#include <map>
 
 using namespace std;
 
@@ -34,11 +37,8 @@ void Table::deleteAttribute(string attribute){
     }
     for(int i =0; i < rows.size(); i++){
         rows[i].deleteRecordAttribute(index);
-
     }
-
 }
-
 
 void Table::insert(Record record){
     rows.push_back(record);
@@ -70,7 +70,6 @@ void Table::makeKey(string attribute){
 }
 
 Table Table::crossJoin(Table table, Table table2){
-
     vector<string> attributes;
     int index;
 
@@ -101,15 +100,68 @@ Table Table::crossJoin(Table table, Table table2){
             t.rows.push_back(r);
         }
     }
-
-
 }
 
 Table Table::naturalJoin(Table table, Table table2){
+    vector<string>::iterator it;
+    if(table2.key.empty()){
+        throw DbError("No key to natural join on");
+    };
 
+    int keyIndex;
+    for (int i = 0; i < table2.getAttributes().size(); i++){
+        if (table2.key == table2.getAttributes().at(i)) {
+            keyIndex = i;
+        }
+    }
 
-    cout << "one table is now produced but multiple things are checked before" << endl;
-    return Table();
+    int matchIndex = -1;
+    for (int i = 0; i < table.getAttributes().size(); i++) {
+        if (table.getAttributes().at(i) == table2.key) {
+            matchIndex = i;
+        }
+    }
+
+    if (matchIndex < 0) {
+        throw DbError("No matching attribute for natural join");
+    }
+
+    Table joinedTable(table.getAttributes());
+    for (int i =0; i < table2.getAttributes().size(); i++) {
+        if(table2.getAttributes().at(i) != table2.key) {
+            joinedTable.addAttribute(table2.getAttributes().at(i));
+        }
+    }
+
+    map <string, Record> table2Attributes;
+    for(int i = 1; i < table2.rows.size(); i++) {
+        table2Attributes[table2.rows.at(i)[keyIndex]] = table2.rows.at(i);
+    };
+
+    for(int i = 1; i < table.rows.size(); i++) {
+        // rows that match in the map should be updated
+        Record matchRecord = table2Attributes.at(table.rows.at(i)[matchIndex]);
+        // if record was not found
+        if (matchRecord.size() == 0) {
+            break;
+        }
+        else {
+            Record newRecord(table.rows.at(0).size() + table2.rows.at(0).size() - 1);
+            for (int j = 0; j < table.rows.at(0).size() - 1; j++) {
+                newRecord[j] = table.rows.at(i)[j];
+            }
+
+            for (int j = 0; j < matchRecord.size() - 1; j++) {
+                if (j != keyIndex) {
+                    // add the matching attributes to the other record
+                    newRecord[table.rows.at(0).size() + j] = matchRecord[j];
+                }
+            }
+            joinedTable.insert(newRecord);
+        }
+    }
+
+    return joinedTable;
 }
 
 int Table::count(string attribute) {

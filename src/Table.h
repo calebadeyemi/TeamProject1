@@ -17,10 +17,10 @@ using namespace std;
 
 class Table{
 private:
-  string key;
   vector<Record> rows;
 
 public:
+    string key;
     // Builds an empty table
     Table();
 

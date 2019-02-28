@@ -1,3 +1,4 @@
+cmake_minimum_required(VERSION 3.9)
 include(GenerateExportHeader)
 
 project(${CMAKE_PROJECT_NAME}_lib)
@@ -18,8 +19,8 @@ set(IMPLEMENTATION_FILES
 
 # The library contains header and source files.
 add_library(${CMAKE_PROJECT_NAME}_lib STATIC
-        ${IMPLEMENTATION_FILES}
         ${HEADER_FILES}
+        ${IMPLEMENTATION_FILES}
         )
 
 set_target_properties(${CMAKE_PROJECT_NAME}_lib

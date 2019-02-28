@@ -33,6 +33,7 @@ TEST(DatabaseTests, GetsTableNames) {
 
 TEST(DatabaseTests, DoesQuery) {
     Database d;
-    Table t = d.query("SELECT * FROM table1 WHERE name = 3");
-    FAIL();
+    Table t;
+    d.add("table1", t);
+    Table result = d.query("*", "table1", "age > rank");
 }
