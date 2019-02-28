@@ -43,7 +43,7 @@ public:
     int getSize();
 
     // Gets all records in a table
-    Record getRecords();
+    vector<Record> getRecords();
 
     // Makes an attribute the key
     void makeKey(string attribute);

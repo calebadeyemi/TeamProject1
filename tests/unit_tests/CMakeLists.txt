@@ -1,4 +1,4 @@
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
+include_directories(${gtest_SOURCE_DIR}/include)
 set(TEST_NAME tests)
 
 add_executable(${TEST_NAME}

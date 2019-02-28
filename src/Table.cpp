@@ -61,8 +61,8 @@ int Table::getSize(){
     return size;
 }
 
-Record Table::getRecords() {
-    //return vector<Record>();
+vector<Record> Table::getRecords() {
+    return rows;
 }
 
 void Table::makeKey(string attribute){

@@ -5,48 +5,54 @@
 #include "DbError.h"
 
 struct ComparisonStack {
-
+    vector<string> equations;
     map<string, string> relations;
     map<string, string> comparisons;
     string lhs;
     string rhs;
     string comparator;
+    string parentasizedEquation;
+
     ComparisonStack() {
-        relations["AND"] = "&&";
-        relations["OR"] = "||";
-        relations["NOT"] = "!";
-        comparisons[">"] = ">";
-        comparisons[">="] = ">=";
-        comparisons["<"] = "<";
-        comparisons["<="] = "<=";
-        comparisons["="] = "<=";
+        relations["AND"] = "))&&((";
+        relations["OR"] = "))||((";
+        relations["NOT"] = ")!(";
+        comparisons[">"] = ")))>(((";
+        comparisons[">="] = ")))>=(((";
+        comparisons["<"] = ")))<(((";
+        comparisons["<="] = ")))<=(((";
+        comparisons["="] = ")))<=(((";
+        comparisons["="] = ")))<=(((";
+        comparisons["("] = "((((";
+        comparisons[")"] = "))))";
     }
 
     ComparisonStack(stringstream& ss) : ComparisonStack() {
         string currString;
+        parentasizedEquation = "((((";
         ss >> currString;
         while (relations.find(currString) == relations.end() && ss.good()) {
-            lhs += currString;
-            ss >> currString;
-        }
-        comparator = currString;
+            if (relations.find(currString) != relations.end()) {
+                currString = relations[currString];
+            } else if (comparisons.find(currString) != comparisons.end()) {
+                currString = comparisons[currString];
+            }
 
-        ss >> currString;
-        while (ss.good()) {
-            rhs += currString;
+            parentasizedEquation += currString;
             ss >> currString;
         }
+        parentasizedEquation = "))))";
         ss.clear();
-
     }
 
     void print() {
-        cout << lhs << " : " << comparator << " : "  << rhs << endl;
+        cout << parentasizedEquation << endl;
     }
 };
 
 void Database::add(string tableName, Table table) {
     tables[tableName] = table;
+    ComparisonStack c;
 }
 
 void Database::drop(string tableName) {
