@@ -6,39 +6,43 @@
 //
 
 #include "Record.h"
+#include <algorithm>
 
 int Record::size(){
-    return this->content.size();
+    return content.size();
 }
 
 Record::Record() {
 }
 
 Record::Record(int newRecordSize){
-    vector<string> newVec;
-    newVec.resize(newRecordSize);
-    content = newVec;
-    cout << "Record constructor function" << endl;
+    content.resize(newRecordSize);
 }
 
 string Record::operator[](int i) const{
-    cout << "Bracket operator function " << endl;
-    return this->content[i];
+    return content[i];
 }
 
 string& Record::operator[](int i){
-    cout << "Bracket operator function " << endl;
-    return this->content[i];
+    return content[i];
 }
 
 void Record::deleteRecordAttribute(int index){
     content.erase(content.begin(), content.begin() + index);
-    
 }
+
 void Record::addRecordAttribute(string attribute){
     content.push_back(attribute);
 }
 
 void Record::addRecordAttribute(){
     content.resize(content.size()+1);
+}
+
+string &Record::operator[](string attribute) {
+    for (int i = 0; i < content.size() -1; i++) {
+        if (content.at(i) == attribute) {
+            return content.at(i);
+        }
+    }
 }

@@ -17,6 +17,7 @@ using namespace std;
 
 class Record{
     vector<string> content;
+    vector<string> attributes;
 
 public:
 
@@ -28,6 +29,8 @@ public:
     string operator[](int index) const;
 
     string& operator[](int index);
+
+    string& operator[](string attribute);
     
     void deleteRecordAttribute(int index);
     

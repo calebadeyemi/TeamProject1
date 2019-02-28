@@ -35,5 +35,5 @@ TEST(DatabaseTests, DoesQuery) {
     Database d;
     Table t;
     d.add("table1", t);
-    Table result = d.query("*", "table1", "age > rank");
+    Table result = d.query("*", "table1", "((age > rank) OR (this < that)) AND NOT those = them");
 }

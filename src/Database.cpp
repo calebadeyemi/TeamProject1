@@ -8,45 +8,43 @@ struct ComparisonStack {
     vector<string> equations;
     map<string, string> relations;
     map<string, string> comparisons;
-    string lhs;
-    string rhs;
-    string comparator;
-    string parentasizedEquation;
+
+    struct Comparison {
+        string lhs;
+        string rhs;
+        char comparator;
+        bool eval() {
+            switch(comparator) {
+                case '&': return lhs && rhs;
+            }
+        };
+    };
 
     ComparisonStack() {
-        relations["AND"] = "))&&((";
-        relations["OR"] = "))||((";
-        relations["NOT"] = ")!(";
-        comparisons[">"] = ")))>(((";
-        comparisons[">="] = ")))>=(((";
-        comparisons["<"] = ")))<(((";
-        comparisons["<="] = ")))<=(((";
-        comparisons["="] = ")))<=(((";
-        comparisons["="] = ")))<=(((";
-        comparisons["("] = "((((";
-        comparisons[")"] = "))))";
+        relations["AND"] = '&';
+        relations["OR"] = '|';
+        relations["NOT"] = '!';
+        comparisons[">"] = '>';
+        comparisons[">="] = 'g';
+        comparisons["<"] = '<';
+        comparisons["<="] = 'l';
+        comparisons["="] = '=';
+        comparisons["("] = '(';
+        comparisons[")"] = ')';
     }
 
     ComparisonStack(stringstream& ss) : ComparisonStack() {
         string currString;
-        parentasizedEquation = "((((";
-        ss >> currString;
-        while (relations.find(currString) == relations.end() && ss.good()) {
+        while (ss.good()) {
+            ss >> currString;
             if (relations.find(currString) != relations.end()) {
                 currString = relations[currString];
             } else if (comparisons.find(currString) != comparisons.end()) {
                 currString = comparisons[currString];
             }
 
-            parentasizedEquation += currString;
-            ss >> currString;
         }
-        parentasizedEquation = "))))";
         ss.clear();
-    }
-
-    void print() {
-        cout << parentasizedEquation << endl;
     }
 };
 
@@ -148,7 +146,6 @@ Table Database::parseComparison(stringstream& comparisons, vector<string>* aggre
     //   (this > that)
     //              ..)
     //               ..)
-
     bool paren = false;
     if (lhs.at(0) == '(') {
         parseComparison(comparisons, aggregator);
