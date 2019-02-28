@@ -31,12 +31,12 @@ public:
     string& operator[](int index);
 
     string& operator[](string attribute);
+
+    void deleteAttribute(int index);
     
-    void deleteRecordAttribute(int index);
-    
-    void addRecordAttribute(string attribute);
-    
-    void addRecordAttribute();
+    void addAttribute(string attribute);
+
+    void addAttribute();
 };
 
 #endif /* Record_hpp */

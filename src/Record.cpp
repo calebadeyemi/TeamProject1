@@ -27,22 +27,14 @@ string& Record::operator[](int i){
     return content[i];
 }
 
-void Record::deleteRecordAttribute(int index){
-    content.erase(content.begin(), content.begin() + index);
+void Record::deleteAttribute(int index){
+    content.erase(content.begin() + index);
 }
 
-void Record::addRecordAttribute(string attribute){
+void Record::addAttribute(string attribute){
     content.push_back(attribute);
 }
 
-void Record::addRecordAttribute(){
+void Record::addAttribute(){
     content.resize(content.size()+1);
-}
-
-string &Record::operator[](string attribute) {
-    for (int i = 0; i < content.size() -1; i++) {
-        if (content.at(i) == attribute) {
-            return content.at(i);
-        }
-    }
 }

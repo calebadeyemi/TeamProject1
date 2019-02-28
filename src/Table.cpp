@@ -12,149 +12,164 @@
 using namespace std;
 
 
-Table::Table(vector<string> attribute){
-    Record r(attribute.size());
+Table::Table(vector<string> attributes){
+    Record r(attributes.size());
 
-    for(int i=0; i < attribute.size(); i++){
-        r[i] =  attribute.at(i);
+    for(int i=0; i < attributes.size(); i++){
+        r[i] =  attributes.at(i);
         cout << r[i] << endl;
     }
-    this->rows.push_back(r);
-}
-
-Table::Table(){
-
+    records.push_back(r);
 }
 
 void Table::deleteAttribute(string attribute){
-    int index;
-    for(int i =0; i < rows.at(0).size(); i++){
-        if(rows.at(0)[i] == attribute){
-            index = i;
-            rows.erase(rows.begin(), rows.begin() + i);
+    // find the attribute's index
+    int attrIndex = -1;
+    for(int i = 0; i < records.at(0).size(); i++){
+        if(records.at(0)[i] == attribute){
+            attrIndex = i;
+            records.erase(records.begin(), records.begin() + i);
             break;
         }
     }
-    for(int i =0; i < rows.size(); i++){
-        rows[i].deleteRecordAttribute(index);
+    if (attrIndex < 0) {
+        throw DbError("attempted to delete non existant attribute");
+    }
+
+    // delete attribute from all indexes
+    for(int i = 0; i < records.size(); i++){
+        records[i].deleteAttribute(attrIndex);
     }
 }
 
 void Table::insert(Record record){
-    rows.push_back(record);
+    records.push_back(record);
 }
 
 void Table::addAttribute(string attribute){
-    rows.at(0).addRecordAttribute(attribute);
+    records.at(0).addAttribute(attribute);
+
+    // increase size of all records
+    for (auto &record : records) {
+        record.addAttribute();
+    }
 }
 
 vector<string> Table::getAttributes(){
-    vector<string> attributes;
-    for(int i=0; i < rows.at(0).size(); ++i){
-        attributes.push_back(rows.at(0)[i]);
+    vector<string> attributes(records.at(0).size());
+    for(int i=0; i < attributes.size(); ++i){
+        attributes[i] = records.at(0)[i];
     }
     return attributes;
 }
 
 int Table::getSize(){
-    int size = rows.size()-1;
-    return size;
+    return records.size();
 }
 
 vector<Record> Table::getRecords() {
-    return rows;
+    return records;
 }
 
 void Table::makeKey(string attribute){
-    this->key = attribute;
+    bool keySet = false;
+    key = attribute;
+    auto attributes = getAttributes();
+    for(int i = 0; i < attributes.size(); i++) {
+        if (attributes[i] == key) {
+            keyIndex = i;
+            break;
+        }
+    };
+    if (!keySet) {
+        throw DbError("attempted to set key on non existant attribute");
+    }
 }
 
-Table Table::crossJoin(Table table, Table table2){
+string Table::getKey() {
+    return key;
+}
+
+int Table::getKeyIndex() {
+    return keyIndex;
+}
+
+Table Table::crossJoin(Table table1, Table table2){
+    // Join the attribute lists
     vector<string> attributes;
-    int index;
-
-    int tableSize = table.rows.size();
-    int table2Size = table2.rows.size();
-    int newTableSize = (tableSize * table2Size) - 1;
-
-    for(int i=0; i < table.rows.at(0).size(); i++){
-        attributes.push_back(table.rows.at(0)[i]);
+    for(int i=0; i < table1.getAttributes().size(); i++){
+        attributes.push_back(table1.records.at(0)[i]);
     }
 
-    for(int j=0; j < table2.rows.at(0).size(); j++){
-        attributes.push_back(table.rows.at(0)[j]);
+    for(int j=0; j < table2.getAttributes().size(); j++){
+        attributes.push_back(table1.records.at(0)[j]);
     }
 
+    // Build new table
     Table t(attributes);
 
-    for(int i=1; i < table.rows.size(); i++){
-        for(int j=1; j < table2.rows.size(); j++){
+    // Cross join
+    for(int i = 1; i < table1.getSize(); i++){
+        for(int j = 1; j < table2.getSize(); j++){
             Record r(attributes.size());
-            for(int k =0; k < table.rows.at(i).size(); k++){
-                r[k] = table.rows.at(i)[k];
-                index = k;
+            for(int k = 0; k < table1.getAttributes().size(); k++){
+                r[k] = table1.records.at(i)[k];
             }
-            for(int k =0; k < table2.rows.at(j).size(); k++){
-                r[index + k] = table2.rows.at(j)[k];
+
+            int offset = table1.getAttributes().size() - 1;
+            for(int k = 0; k < table2.getAttributes().size(); k++){
+                r[offset + k] = table2.records.at(j)[k];
             }
-            t.rows.push_back(r);
+            t.records.push_back(r);
         }
     }
+
+    return t;
 }
 
-Table Table::naturalJoin(Table table, Table table2){
+Table Table::naturalJoin(Table table1, Table table2){
     vector<string>::iterator it;
     if(table2.key.empty()){
-        throw DbError("No key to natural join on");
+        throw DbError("No key to natural join on.");
     };
 
-    int keyIndex;
-    for (int i = 0; i < table2.getAttributes().size(); i++){
-        if (table2.key == table2.getAttributes().at(i)) {
-            keyIndex = i;
-        }
+    int matchIndex;
+    try {
+        matchIndex = table1.getAttributeIndex(table2.key);
+    } catch (DbError e) {
+        throw DbError("no matching index found to natural join");
     }
 
-    int matchIndex = -1;
-    for (int i = 0; i < table.getAttributes().size(); i++) {
-        if (table.getAttributes().at(i) == table2.key) {
-            matchIndex = i;
-        }
-    }
-
-    if (matchIndex < 0) {
-        throw DbError("No matching attribute for natural join");
-    }
-
-    Table joinedTable(table.getAttributes());
+    Table joinedTable(table1.getAttributes());
     for (int i =0; i < table2.getAttributes().size(); i++) {
-        if(table2.getAttributes().at(i) != table2.key) {
+        if(i != table2.getKeyIndex()) {
             joinedTable.addAttribute(table2.getAttributes().at(i));
         }
     }
 
-    map <string, Record> table2Attributes;
-    for(int i = 1; i < table2.rows.size(); i++) {
-        table2Attributes[table2.rows.at(i)[keyIndex]] = table2.rows.at(i);
+    int keyIndex = table2.getKeyIndex();
+    map <string, Record> uniqueKeys;
+    for(int i = 1; i < table2.getSize(); i++) {
+        uniqueKeys[table2.getRecords().at(i)[keyIndex]] = table2.getRecords().at(i);
     };
 
-    for(int i = 1; i < table.rows.size(); i++) {
+    for(int i = 1; i < table1.getRecords().size(); i++) {
         // rows that match in the map should be updated
-        Record matchRecord = table2Attributes.at(table.rows.at(i)[matchIndex]);
+        Record matchRecord = uniqueKeys.at(table1.getRecords().at(i)[matchIndex]);
         // if record was not found
         if (matchRecord.size() == 0) {
-            break;
+            continue;
         }
         else {
-            Record newRecord(table.rows.at(0).size() + table2.rows.at(0).size() - 1);
-            for (int j = 0; j < table.rows.at(0).size() - 1; j++) {
-                newRecord[j] = table.rows.at(i)[j];
+            Record newRecord(table1.getAttributes().size() + table2.getAttributes().size());
+            for (int j = 0; j < table1.getAttributes().size(); j++) {
+                newRecord[j] = table1.getRecords().at(i)[j];
             }
 
             for (int j = 0; j < matchRecord.size() - 1; j++) {
                 if (j != keyIndex) {
                     // add the matching attributes to the other record
-                    newRecord[table.rows.at(0).size() + j] = matchRecord[j];
+                    newRecord[table1.getAttributes().size() - 1 + j] = matchRecord[j];
                 }
             }
             joinedTable.insert(newRecord);
@@ -167,14 +182,14 @@ Table Table::naturalJoin(Table table, Table table2){
 int Table::count(string attribute) {
     int index;
     int count;
-    for(int i=0; i < rows.at(0).size(); i++) {
-        if (rows.at(0)[i] == attribute){
+    for(int i=0; i < getAttributes().size(); i++) {
+        if (records.at(0)[i] == attribute){
             index = i;
             break;
         }
     }
-    for(int j=1; j < rows.size(); j++){
-        if(rows.at(j)[index] != " "){
+    for(int j=1; j < records.size(); j++){
+        if(records.at(j)[index] != " "){
             count++;
         }
     }
@@ -184,14 +199,14 @@ int Table::count(string attribute) {
 string Table::min(string attribute) {
     int index;
     vector<string> attributeVec;
-    for(int i=0; i < rows.at(0).size(); i++) {
-        if (rows.at(0)[i] == attribute){
+    for(int i=0; i < records.at(0).size(); i++) {
+        if (records.at(0)[i] == attribute){
             index = i;
             break;
         }
     }
-    for(int j=1; j < rows.size(); j++){
-        attributeVec.push_back(rows.at(j)[index]);
+    for(int j=1; j < records.size(); j++){
+        attributeVec.push_back(records.at(j)[index]);
     }
     sort(attributeVec.begin(), attributeVec.end());
     return attributeVec.at(0);
@@ -200,18 +215,35 @@ string Table::min(string attribute) {
 string Table::max(string attribute) {
     int index;
     vector<string> attributeVec;
-    for(int i=0; i < rows.at(0).size(); i++) {
-        if (rows.at(0)[i] == attribute){
+    for(int i=0; i < records.at(0).size(); i++) {
+        if (records.at(0)[i] == attribute){
             index = i;
             break;
         }
     }
-    for(int j=1; j < rows.size(); j++){
-        attributeVec.push_back(rows.at(j)[index]);
+    for(int j=1; j < records.size(); j++){
+        attributeVec.push_back(records.at(j)[index]);
     }
     sort(attributeVec.begin(), attributeVec.end());
 
     return attributeVec.at(attributeVec.size() - 1);
+}
+
+Record Table::getRecord(int i) {
+    return records.at(i);
+}
+
+int Table::getAttributeIndex(string attribute) {
+    auto attributes = getAttributes();
+    bool found = false;
+    for (int i = 0; i < attributes.size(); i++) {
+        if (attributes.at(i) == attribute) {
+            return i;
+        }
+    }
+    if (!found) {
+        throw DbError("index requested for non existent attribute");
+    }
 }
 
 
