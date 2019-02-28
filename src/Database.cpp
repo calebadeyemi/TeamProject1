@@ -4,13 +4,14 @@
 #include "Database.h"
 #include "DbError.h"
 
-struct Comparison {
+struct ComparisonStack {
+
     map<string, string> relations;
     map<string, string> comparisons;
     string lhs;
     string rhs;
     string comparator;
-    Comparison() {
+    ComparisonStack() {
         relations["AND"] = "&&";
         relations["OR"] = "||";
         relations["NOT"] = "!";
@@ -21,7 +22,7 @@ struct Comparison {
         comparisons["="] = "<=";
     }
 
-    Comparison(stringstream& ss) : Comparison() {
+    ComparisonStack(stringstream& ss) : ComparisonStack() {
         string currString;
         ss >> currString;
         while (relations.find(currString) == relations.end() && ss.good()) {
@@ -36,6 +37,7 @@ struct Comparison {
             ss >> currString;
         }
         ss.clear();
+
     }
 
     void print() {
@@ -67,13 +69,13 @@ void Database::save(string fileName) {
         }
         dbStore << endl;
 
-        for (Record record : table.getRecords()) {
-            dbStore << record[0];
-            for (int i = 1; i < attributes.size() - 1; i++) {
-                dbStore << ", " << record[i];
-            }
-            dbStore << endl;
-        }
+        //for (Record record : table.getRecords()) {
+        //    dbStore << record[0];
+        //    for (int i = 1; i < attributes.size() - 1; i++) {
+        //        dbStore << ", " << record[i];
+        //    }
+        //    dbStore << endl;
+        //}
     }
 }
 
@@ -111,9 +113,7 @@ Table Database::query(string select, string from, string where) {
 
     // get all the (...) comparisons
     stringstream whereStream(where);
-    Comparison comp(whereStream);
-
-    comp.print();
+    ComparisonStack comp(whereStream);
 
     // generate a new table
     Table matchTable(attributes);

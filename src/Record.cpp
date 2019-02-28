@@ -8,8 +8,10 @@
 #include "Record.h"
 
 int Record::size(){
-    
     return this->content.size();
+}
+
+Record::Record() {
 }
 
 Record::Record(int newRecordSize){

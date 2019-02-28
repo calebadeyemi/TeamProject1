@@ -20,6 +20,7 @@ class Record{
 
 public:
 
+    Record();
     explicit Record(int recordSize);
 
     int size();

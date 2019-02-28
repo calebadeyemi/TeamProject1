@@ -19,7 +19,6 @@ include_directories(src)
 set(PUBLIC_HEADERS GLOB src/*.h)
 
 install(FILES "src/Database.h"
-
         DESTINATION lib)
 
 add_subdirectory(src)
