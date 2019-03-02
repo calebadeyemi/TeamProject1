@@ -9,14 +9,14 @@
 using namespace std;
 
 class Database {
-    map<string, Table> tables;
+    map<string, Table*> tables;
     vector<string> getAttributesFromQuery(stringstream& query);
     Table getTableFromQuery(string &tableName);
     Table parseComparison(stringstream& comparisons, vector<string>* aggregator = nullptr);
 
 public:
     // Adds a new table to the database
-    void add(string tableName, Table table);
+    void add(string tableName, Table *table);
 
     // Drops a table from the database (deletes it)
     void drop(string tableName);

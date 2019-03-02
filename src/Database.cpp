@@ -1,53 +1,12 @@
 #include <map>
+#include <regex>
 #include <sstream>
 #include <fstream>
 #include "Database.h"
 #include "DbError.h"
 
-struct ComparisonStack {
-    vector<string> equations;
-    map<string, string> relations;
-    map<string, string> comparisons;
-
-    struct Comparison {
-        string lhs;
-        string rhs;
-        char comparator;
-        bool eval() {
-        };
-    };
-
-    ComparisonStack() {
-        relations["AND"] = '&';
-        relations["OR"] = '|';
-        relations["NOT"] = '!';
-        comparisons[">"] = '>';
-        comparisons[">="] = 'g';
-        comparisons["<"] = '<';
-        comparisons["<="] = 'l';
-        comparisons["="] = '=';
-        comparisons["("] = '(';
-        comparisons[")"] = ')';
-    }
-
-    ComparisonStack(stringstream& ss) : ComparisonStack() {
-        string currString;
-        while (ss.good()) {
-            ss >> currString;
-            if (relations.find(currString) != relations.end()) {
-                currString = relations[currString];
-            } else if (comparisons.find(currString) != comparisons.end()) {
-                currString = comparisons[currString];
-            }
-
-        }
-        ss.clear();
-    }
-};
-
-void Database::add(string tableName, Table table) {
+void Database::add(string tableName, Table* table) {
     tables[tableName] = table;
-    ComparisonStack c;
 }
 
 void Database::drop(string tableName) {
@@ -61,27 +20,58 @@ void Database::save(string fileName) {
 
     // add headers
     for (auto const &tableMapping : tables) {
-        Table table = tableMapping.second;
-        auto attributes = table.getAttributes();
-        dbStore << attributes.at(0);
+        string tableName = tableMapping.first;
+        Table* table = tableMapping.second;
 
-        for (int i = 1; i < attributes.size() - 1; i++) {
-            dbStore << " ," << attributes.at(i);
+        dbStore << "TABLE " << tableName << endl;
+
+        for (int i = 0; i < table->getSize(); i++) {
+            Record* record = table->getRecord(i);
+            for (int j = 0; j < record->size(); j++) {
+                dbStore << record->operator[](j) << ",";
+            }
+            dbStore << endl;
         }
-        dbStore << endl;
-
-        //for (Record record : table.getRecords()) {
-        //    dbStore << record[0];
-        //    for (int i = 1; i < attributes.size() - 1; i++) {
-        //        dbStore << ", " << record[i];
-        //    }
-        //    dbStore << endl;
-        //}
     }
 }
 
-Database Database::load(string tableName) {
-    return Database();
+Database Database::load(string fileName) {
+    ifstream dbStore(fileName);
+    string tableName;
+    int size = 0;
+    while(dbStore.good()) {
+        char* line;
+        dbStore.getline(line, RLIM_INFINITY, '\n');
+
+        regex r("TABLE *");
+        // if this is new table, build the table
+        if (regex_match(line, r)) {
+            tableName = regex_replace(line, r, "TABLE *-$2");
+            Table* t = new Table;
+            size = 0;
+            tables[tableName] = t;
+
+            // get attributes from next line
+            dbStore.getline(line, RLIM_INFINITY, '\n');
+            char* attributes = strtok(line, ",");
+            while(attributes != nullptr) {
+                t->addAttribute(string(attributes));
+                attributes = strtok(nullptr, ",");
+                size++;
+            }
+            continue;
+        }
+
+        char* attributes = strtok(line, ",");
+        Record* record = new Record(size);
+        // else populate a new record
+        int index = 0;
+        while(attributes != nullptr) {
+            record->operator[](index) = string(attributes);
+            attributes = strtok(nullptr, ",");
+            index++;
+        }
+    }
 }
 
 vector<string> Database::getTableNames() {
@@ -95,67 +85,13 @@ vector<string> Database::getTableNames() {
 vector<Table> Database::getTables() {
     vector<Table> tableList;
     for (auto const &mapping : tables) {
-        tableList.push_back(mapping.second);
+        tableList.push_back(*mapping.second);
     }
     return tableList;
 }
 
 Table Database::query(string select, string from, string where) {
-    // get attribute list
-    stringstream selectStream(select);
-    vector<string> attributes;
-    attributes = getAttributesFromQuery(selectStream);
 
-    // get the proper table
-    Table table = getTableFromQuery(from);
-
-    // here we need to get the table and run the comparisons on it
-    auto records = table.getRecords();
-
-    // get all the (...) comparisons
-    stringstream whereStream(where);
-    ComparisonStack comp(whereStream);
-
-    // generate a new table
-    Table matchTable(attributes);
-        // Apply comparisons on each record
-
-
-        // if the record works, store in table
-
-    return matchTable;
-}
-
-Table Database::parseComparison(stringstream& comparisons, vector<string>* aggregator) {
-    // Every comparison will return a table, and subsequent comparisons will act on
-    // that table. For example:
-    //
-    // Select * FROM table WHERE ((something > otherthing) AND ((this = that) OR NOT (this = 'bucket')))
-    //
-    // First returns a table where something > otherthing
-    string lhs, comparator, rhs;
-    comparisons >> lhs;
-
-    // if open bracket, drop into another comparison. This will continue until fully resolved
-    // (((this > that)))
-    // (..
-    //  (..
-    //   (this > that)
-    //              ..)
-    //               ..)
-    bool paren = false;
-    if (lhs.at(0) == '(') {
-        parseComparison(comparisons, aggregator);
-        paren = true;
-        // remove paren
-        lhs.erase(0);
-    }
-
-    comparisons >> comparator;
-    comparisons >> rhs;
-    if (paren) {
-        rhs.erase(rhs.size() - 1);
-    }
 }
 
 vector<string> Database::getAttributesFromQuery(stringstream &query) {
@@ -177,7 +113,7 @@ vector<string> Database::getAttributesFromQuery(stringstream &query) {
 
 Table Database::getTableFromQuery(string &tableName) {
     if (tables.find(tableName) != tables.end()) {
-        return tables[tableName];
+        return *tables[tableName];
     } else {
         throw DbError("requested table " + tableName + " not in the database");
     }

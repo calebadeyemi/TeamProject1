@@ -8,6 +8,7 @@ set(HEADER_FILES
         Table.h
         Record.h
         DbError.h
+        QueryParser.h
         )
 
 set(IMPLEMENTATION_FILES
@@ -15,6 +16,7 @@ set(IMPLEMENTATION_FILES
         Database.cpp
         Record.cpp
         DbError.cpp
+        QueryParser.cpp
         )
 
 # The library contains header and source files.

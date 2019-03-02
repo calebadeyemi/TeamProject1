@@ -188,8 +188,9 @@ int Table::count(string attribute) {
             break;
         }
     }
+
     for(int j=1; j < records.size(); j++){
-        if(getRecord(j)->operator[](index) != " "){
+        if(!getRecord(j)->operator[](index).empty()){
             count++;
         }
     }
