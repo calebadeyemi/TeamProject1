@@ -25,6 +25,8 @@ public:
     // Builds an empty table
     Table() = default;
 
+    ~Table();
+
     // Builds a table with a list of attributes
     explicit Table(vector<string> attributes);
 

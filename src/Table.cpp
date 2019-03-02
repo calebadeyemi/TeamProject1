@@ -19,6 +19,12 @@ Table::Table(vector<string> attributes){
     records.push_back(r);
 }
 
+Table::~Table() {
+    for (auto record : records) {
+        delete record;
+    }
+}
+
 void Table::deleteAttribute(string attribute){
     // find the attribute's index
     int attrIndex = -1;
@@ -44,7 +50,14 @@ void Table::insert(Record* record){
 }
 
 void Table::addAttribute(string attribute){
-    getHeaderRecord()->addAttribute(attribute);
+    if (getSize() > 0) {
+        getHeaderRecord()->addAttribute(attribute);
+    } else {
+        Record* header = new Record;
+        header->addAttribute(attribute);
+        records.push_back(header);
+    }
+
 
     // increase size of all records
     for (int i = 1; i < getSize(); i++) {

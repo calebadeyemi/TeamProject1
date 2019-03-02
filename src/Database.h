@@ -15,6 +15,8 @@ class Database {
     Table parseComparison(stringstream& comparisons, vector<string>* aggregator = nullptr);
 
 public:
+    ~Database();
+
     // Adds a new table to the database
     void add(string tableName, Table *table);
 
@@ -25,13 +27,15 @@ public:
     void save(string fileName);
 
     // Retrieves a database from the disk
-    Database load(string tableName);
+    Database* load(string tableName);
 
     // Gets a list of the table names available
     vector<string> getTableNames();
 
     // Gets the tables from a database
-    vector<Table> getTables();
+    vector<Table*> getTables();
+
+    Table* getTable(string tableName);
 
     // Queries the database for records and returns a Table
     Table query(string select, string from, string where);
