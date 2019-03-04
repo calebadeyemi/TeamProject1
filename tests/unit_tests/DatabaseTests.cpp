@@ -7,7 +7,6 @@ TEST(DatabaseTests, AddsTable) {
     Database d;
     d.add("table1", t);
     ASSERT_NO_THROW(d.getTables().at(0));
-    delete t;
 }
 
 TEST(DatabaseTests, DropsTable) {
@@ -16,14 +15,13 @@ TEST(DatabaseTests, DropsTable) {
     d.add("t1", t);
     d.drop("t1");
     ASSERT_THROW(d.getTables().at(0), out_of_range);
-    delete t;
 }
 
 TEST(DatabaseTests, GetsTableNames) {
-    Table* t = new Table;
     Database d;
     vector<string> tableNames = {"t1", "t2", "t3"};
     for (auto name : tableNames) {
+        Table* t = new Table;
         d.add(name, t);
     }
 
@@ -31,7 +29,6 @@ TEST(DatabaseTests, GetsTableNames) {
     for (int i = 0; i < tableNames.size(); i++) {
         ASSERT_EQ(tableNames[i], storedNames[i]);
     }
-    delete t;
 }
 
 TEST(DatabaseTests, DoesQuery) {
@@ -39,7 +36,6 @@ TEST(DatabaseTests, DoesQuery) {
     Table* t = new Table;
     d.add("table1", t);
     Table result = d.query("*", "table1", "((age > rank) OR (this < that)) AND NOT those = them");
-    delete t;
 }
 
 TEST(DatabaseTests, StoresDb) {
@@ -56,5 +52,4 @@ TEST(DatabaseTests, StoresDb) {
     d.save("testdb");
     Database* d2 = d.load("testdb");
     d2->save("otherTestDb");
-    delete t;
 }

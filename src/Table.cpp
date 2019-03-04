@@ -21,7 +21,7 @@ Table::Table(vector<string> attributes){
 
 Table::~Table() {
     for (auto record : records) {
-        delete record;
+        //delete record;
     }
 }
 

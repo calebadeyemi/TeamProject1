@@ -11,7 +11,7 @@ using namespace std;
 class Database {
     map<string, Table*> tables;
     vector<string> getAttributesFromQuery(stringstream& query);
-    Table getTableFromQuery(string &tableName);
+    Table* getTableFromQuery(string &tableName);
     Table parseComparison(stringstream& comparisons, vector<string>* aggregator = nullptr);
 
 public:
