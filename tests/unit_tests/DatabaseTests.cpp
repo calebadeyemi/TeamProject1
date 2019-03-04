@@ -49,7 +49,7 @@ TEST(DatabaseTests, StoresDb) {
         t->insert(r);
     }
     d.add("table1", t);
-    d.save("testdb");
-    Database* d2 = d.load("testdb");
-    d2->save("otherTestDb");
+    d.save("testdb.csv");
+    Database* d2 = d.load("testdb.csv");
+    d2->save("otherTestDb.csv");
 }

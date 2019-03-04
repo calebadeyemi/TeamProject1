@@ -54,7 +54,7 @@ Database* Database::load(string fileName) {
         getline(dbStore, line);
 
         // if this is new table, build the table
-        regex r("TABLE (.*)");
+        regex r("TABLE .*");
         if (regex_match(line, r)) {
             tableName = regex_replace(line, r, "$2");
             Table* t = new Table;

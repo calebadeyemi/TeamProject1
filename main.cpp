@@ -36,7 +36,7 @@ int main() {
  string attribute = attributes[0];
  t.count(attribute);
  t.deleteAttribute(attribute);
- t.insert(r);
+ t.insert(&r);
  t.addAttribute(attribute_name);
  t.getAttributes();
  t.getSize();
@@ -48,8 +48,8 @@ int main() {
 
  Table t1;
  Table t2;
- t.naturalJoin(t1, t2);
- t.crossJoin(t1, t2);
+ t.naturalJoin(&t1, &t2);
+ t.crossJoin(&t1, &t2);
 
 
  //////////////////////////////////////////////////////////////////////////////////
@@ -62,11 +62,11 @@ int main() {
 
  string tableName = "test_table";
 
- d.add(tableName, t);
+ d.add(tableName, &t);
  d.save(tableName);
  d.load(tableName);
  d.getTableNames();
  d.getTables();
- d.query("SELECT * WHERE this GT bananas");
+ d.query("*", "test_table", "this > bananas");
  d.drop(tableName);
 }

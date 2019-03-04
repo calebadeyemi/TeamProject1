@@ -17,7 +17,6 @@ using namespace std;
 
 class Record{
     vector<string> content;
-    vector<string> attributes;
 
 public:
 
